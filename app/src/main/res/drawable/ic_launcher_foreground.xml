@@ -7,14 +7,14 @@
 
     <!-- The sweep line, with its faded trail above and below. -->
     <path
-        android:fillColor="#7CC4A5"
+        android:fillColor="#1D6E8E"
         android:fillAlpha="0.25"
         android:pathData="M28,38 h52 a2,2 0 0 1 0,4 h-52 a2,2 0 0 1 0,-4 z" />
     <path
-        android:fillColor="#7CC4A5"
+        android:fillColor="#1D6E8E"
         android:pathData="M26,52 h56 a3,3 0 0 1 0,6 h-56 a3,3 0 0 1 0,-6 z" />
     <path
-        android:fillColor="#7CC4A5"
+        android:fillColor="#1D6E8E"
         android:fillAlpha="0.25"
         android:pathData="M28,68 h52 a2,2 0 0 1 0,4 h-52 a2,2 0 0 1 0,-4 z" />
 </vector>

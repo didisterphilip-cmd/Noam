@@ -55,7 +55,7 @@
         android:layout_margin="20dp"
         android:backgroundTint="@color/gate_accent"
         android:text="@string/picker_done"
-        android:textColor="@color/gate_background"
+        android:textColor="@color/gate_on_accent"
         android:textSize="16sp"
         android:textStyle="bold"
         android:visibility="gone" />

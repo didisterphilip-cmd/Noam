@@ -24,13 +24,15 @@
             android:contentDescription="@string/app_icon" />
 
         <TextView
+            android:id="@+id/breathText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:letterSpacing="0.08"
-            android:text="@string/gate_heading"
-            android:textColor="@color/gate_text_muted"
-            android:textSize="13sp" />
+            android:letterSpacing="0.12"
+            android:text="@string/breath_inhale"
+            android:textColor="@color/gate_accent"
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/appName"
@@ -88,7 +90,7 @@
             android:backgroundTint="@color/gate_accent"
             android:paddingHorizontal="16dp"
             android:text="@string/gate_stop"
-            android:textColor="@color/gate_background"
+            android:textColor="@color/gate_on_accent"
             android:textSize="21sp"
             android:textStyle="bold"
             app:cornerRadius="22dp" />

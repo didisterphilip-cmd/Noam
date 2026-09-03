@@ -26,6 +26,9 @@ class GateActivity : AppCompatActivity() {
 
     private var targetPackage: String = ""
     private var animator: ValueAnimator? = null
+
+    /** Which of the two breath words is on screen, so it is only set when it changes. */
+    private var shownBreath: Int = 0
     private val handler = Handler(Looper.getMainLooper())
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,9 +76,11 @@ class GateActivity : AppCompatActivity() {
 
     private fun startCountdown() {
         animator?.cancel()
+        shownBreath = R.string.breath_inhale
         binding.decisionGroup.visibility = View.INVISIBLE
         binding.sweepLine.progress = 0f
         binding.countdownText.text = PHASE_SECONDS.toString()
+        binding.breathText.setText(R.string.breath_inhale)
 
         animator = ValueAnimator.ofFloat(0f, 1f).apply {
             duration = COUNTDOWN_MS
@@ -94,6 +99,13 @@ class GateActivity : AppCompatActivity() {
                     .coerceIn(0, PHASE_SECONDS)
                 if (binding.countdownText.text != shown.toString()) {
                     binding.countdownText.text = shown.toString()
+                }
+
+                // The line rising is the breath in, the line falling the breath out.
+                val breath = if (fraction < 0.5f) R.string.breath_inhale else R.string.breath_exhale
+                if (breath != shownBreath) {
+                    shownBreath = breath
+                    binding.breathText.setText(breath)
                 }
             }
             doOnEndCompat { revealButtons() }

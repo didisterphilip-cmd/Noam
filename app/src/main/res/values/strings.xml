@@ -8,7 +8,8 @@
     <string name="app_icon">App icon</string>
 
     <!-- Gate screen -->
-    <string name="gate_heading">YOU ARE ABOUT TO OPEN</string>
+    <string name="breath_inhale">INHALE</string>
+    <string name="breath_exhale">EXHALE</string>
     <string name="gate_stop">I don\'t want to use the app</string>
     <string name="gate_continue">Continue to the app</string>
 

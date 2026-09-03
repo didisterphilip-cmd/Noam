@@ -3,8 +3,9 @@
 An Android app that puts a ten-second pause in front of the apps you choose.
 
 You tap Instagram (or whatever is on your list). Instead of Instagram, a full-screen
-count appears: a line sweeps up the screen while the number counts 5 → 1, then the
-line comes back down while it counts 5 → 1 again. Only then do two buttons appear:
+count appears on a pale blue ground: **INHALE** while a line sweeps up the screen
+and the number counts 5 → 1, then **EXHALE** as the line comes back down counting
+5 → 1 again. Only then do two buttons appear:
 
 - **I don't want to use the app** — the large button. Leaves the app and closes it.
 - **Continue to the app** — the small, quiet one underneath. Opens the app you tapped.
@@ -17,7 +18,7 @@ There is no way past the countdown: back does nothing while it runs.
 | --- | --- | --- |
 | Foreground watcher | `GateAccessibilityService.kt` | An accessibility service that hears `TYPE_WINDOW_STATE_CHANGED` and, when the app coming forward is on your list, launches the gate over it. |
 | The pause screen | `GateActivity.kt` | Runs one 10s animator that drives both the line and the two counts of five, then reveals the buttons. |
-| The line | `SweepLineView.kt` | A custom view drawing a full-width line at a height set by `progress` (0 = bottom, 1 = top). |
+| The line | `SweepLineView.kt` | A custom view drawing a full-width line at a height set by `progress` (0 = bottom, 1 = top) — the pacer to breathe along with. |
 | Your list | `AppPickerActivity.kt`, `Prefs.kt` | Every launchable app, with the guarded ones ticked; stored in `SharedPreferences`. |
 | Setup | `MainActivity.kt`, `SettingsNavigator.kt` | The first-run walkthrough, and the deep links onto each permission's settings page. |
 

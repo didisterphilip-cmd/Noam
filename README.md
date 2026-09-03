@@ -9,7 +9,18 @@ and the number counts 5 → 1, then **EXHALE** as the line comes back down count
 
 The app is never named on this screen — its icon is the only cue. Ten seconds of
 breathing works better without the name of what you are reaching for in front of
-you. The buttons are:
+you.
+
+Three lines appear with the buttons, so the decision is made against what the day
+has actually looked like:
+
+```
+Last used 2 hours ago
+Reached for 7 times in the last 24 hours
+You turned back 5 of them
+```
+
+The buttons are:
 
 - **I don't want to use the app** — the large button. Leaves the app and closes it.
 - **Continue to the app** — the small, quiet one underneath. Opens the app you tapped.
@@ -25,6 +36,7 @@ There is no way past the countdown: back does nothing while it runs.
 | The line | `SweepLineView.kt` | A custom view drawing a full-width line at a height set by `progress` (0 = bottom, 1 = top) — the pacer to breathe along with. |
 | Your list | `AppPickerActivity.kt`, `Prefs.kt` | Every launchable app, with the guarded ones ticked; stored in `SharedPreferences`. |
 | Setup | `MainActivity.kt`, `SettingsNavigator.kt` | The first-run walkthrough, and the deep links onto each permission's settings page. |
+| The record | `UsageLog.kt` | A rolling 24-hour log per app — every gate shown, every turning back, and when the app was last entered. |
 
 ### Passes
 
@@ -98,4 +110,6 @@ with the Android SDK installed:
 Nothing leaves the phone. The accessibility service is configured with
 `canRetrieveWindowContent="false"`: it is told which app has come to the front and
 nothing about what is on the screen. The only stored data is your app list and the
-passes, in this app's own `SharedPreferences`.
+passes and the 24-hour usage counts, in this app's own `SharedPreferences`. Nothing
+older than 24 hours is kept, apart from the timestamp of the last entry into each
+app.

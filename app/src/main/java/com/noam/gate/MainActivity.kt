@@ -43,8 +43,8 @@ class MainActivity : AppCompatActivity() {
         binding.appsButton.setOnClickListener { openAppPicker(onboarding = false) }
 
         binding.previewButton.setOnClickListener {
-            val preview = prefs.guardedPackages.firstOrNull() ?: packageName
-            startActivity(GateActivity.intentFor(this, preview))
+            val sample = prefs.guardedPackages.firstOrNull() ?: packageName
+            startActivity(GateActivity.intentFor(this, sample, preview = true))
         }
     }
 

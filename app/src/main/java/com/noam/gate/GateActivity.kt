@@ -4,14 +4,21 @@ import android.animation.ValueAnimator
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
+import android.graphics.Typeface
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
+import android.text.style.StyleSpan
 import android.view.HapticFeedbackConstants
 import android.view.View
 import android.view.animation.LinearInterpolator
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.noam.gate.databinding.ActivityGateBinding
 import kotlin.math.ceil
 
@@ -23,6 +30,10 @@ class GateActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityGateBinding
     private lateinit var prefs: Prefs
+    private lateinit var usage: UsageLog
+
+    /** A preview from the setup screen must not land in the real record. */
+    private var isPreview = false
 
     private var targetPackage: String = ""
     private var animator: ValueAnimator? = null
@@ -36,6 +47,7 @@ class GateActivity : AppCompatActivity() {
         binding = ActivityGateBinding.inflate(layoutInflater)
         setContentView(binding.root)
         prefs = Prefs(this)
+        usage = UsageLog(this)
 
         // While the countdown runs there is no way out: back does nothing, and
         // afterwards it means the same thing as declining.
@@ -64,10 +76,14 @@ class GateActivity : AppCompatActivity() {
             return
         }
         targetPackage = packageName
+        isPreview = intent.getBooleanExtra(EXTRA_PREVIEW, false)
 
         // The icon is the only cue about which app this is — naming it invites
         // you to think about the app instead of the breath.
         binding.appIcon.setImageDrawable(AppRepository.iconOf(this, packageName))
+
+        // Reaching for the app counts whether or not the user goes through.
+        if (!isPreview) usage.recordAttempt(packageName)
 
         startCountdown()
     }
@@ -114,6 +130,7 @@ class GateActivity : AppCompatActivity() {
     private fun revealButtons() {
         binding.countdownText.text = "0"
         binding.sweepLine.progress = 0f
+        showUsage()
 
         binding.decisionGroup.apply {
             alpha = 0f
@@ -124,8 +141,69 @@ class GateActivity : AppCompatActivity() {
         }
     }
 
+    /** The last day at this gate, shown alongside the buttons to decide with. */
+    private fun showUsage() {
+        val lastEntry = usage.lastEntry(targetPackage)
+        if (lastEntry == null) {
+            binding.statLastUsed.setText(R.string.stat_last_never)
+        } else {
+            val ago = formatAgo(System.currentTimeMillis() - lastEntry)
+            highlight(binding.statLastUsed, getString(R.string.stat_last_used, ago), ago)
+        }
+
+        val tried = usage.attemptsInWindow(targetPackage).coerceAtLeast(1)
+        highlight(
+            binding.statTried,
+            resources.getQuantityString(R.plurals.stat_tried, tried, tried),
+            if (tried == 1) null else tried.toString()
+        )
+
+        val declined = usage.declinesInWindow(targetPackage)
+        if (declined == 0) {
+            binding.statDeclined.setText(R.string.stat_declined_none)
+        } else {
+            highlight(
+                binding.statDeclined,
+                resources.getQuantityString(R.plurals.stat_declined, declined, declined),
+                declined.toString()
+            )
+        }
+    }
+
+    /** Picks out the figure in a sentence so the eye lands on it first. */
+    private fun highlight(view: TextView, sentence: String, value: String?) {
+        if (value == null) {
+            view.text = sentence
+            return
+        }
+        val start = sentence.indexOf(value)
+        if (start < 0) {
+            view.text = sentence
+            return
+        }
+        val span = SpannableString(sentence)
+        val end = start + value.length
+        val accent = ContextCompat.getColor(this, R.color.gate_accent)
+        span.setSpan(ForegroundColorSpan(accent), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        span.setSpan(StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        view.text = span
+    }
+
+    private fun formatAgo(elapsed: Long): String {
+        val minutes = elapsed / 60_000L
+        val hours = minutes / 60L
+        val days = hours / 24L
+        return when {
+            minutes < 1L -> getString(R.string.ago_moments)
+            hours < 1L -> resources.getQuantityString(R.plurals.ago_minutes, minutes.toInt(), minutes.toInt())
+            days < 1L -> resources.getQuantityString(R.plurals.ago_hours, hours.toInt(), hours.toInt())
+            else -> resources.getQuantityString(R.plurals.ago_days, days.toInt(), days.toInt())
+        }
+    }
+
     /** Continue: hand out a pass so the gate does not fire again, then open the app. */
     private fun continueToApp() {
+        if (!isPreview) usage.recordEntry(targetPackage)
         prefs.grantPass(targetPackage)
         val launch = packageManager.getLaunchIntentForPackage(targetPackage)
         if (launch != null) {
@@ -140,6 +218,7 @@ class GateActivity : AppCompatActivity() {
      * background, and take this screen out of the way as well.
      */
     private fun declineAndClose() {
+        if (!isPreview) usage.recordDecline(targetPackage)
         prefs.clearPass(targetPackage)
 
         // The service can go home and then kill the app; without it we can at
@@ -193,6 +272,7 @@ class GateActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_PACKAGE = "com.noam.gate.extra.PACKAGE"
+        const val EXTRA_PREVIEW = "com.noam.gate.extra.PREVIEW"
 
         /** Five seconds up, then five seconds back down. */
         private const val PHASE_SECONDS = 5
@@ -204,9 +284,10 @@ class GateActivity : AppCompatActivity() {
         @Volatile
         var isShowing: Boolean = false
 
-        fun intentFor(context: Context, packageName: String): Intent =
+        fun intentFor(context: Context, packageName: String, preview: Boolean = false): Intent =
             Intent(context, GateActivity::class.java)
                 .putExtra(EXTRA_PACKAGE, packageName)
+                .putExtra(EXTRA_PREVIEW, preview)
                 .addFlags(
                     Intent.FLAG_ACTIVITY_NEW_TASK or
                         Intent.FLAG_ACTIVITY_CLEAR_TASK or

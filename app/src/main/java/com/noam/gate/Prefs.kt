@@ -34,6 +34,15 @@ class Prefs(context: Context) {
         get() = prefs.getBoolean(KEY_SETUP_DONE, false)
         set(value) = prefs.edit().putBoolean(KEY_SETUP_DONE, value).apply()
 
+    /**
+     * Set once the first-run walkthrough has finished — either because both
+     * permissions are on, or because the user chose not to grant one. After this
+     * the app stops prompting and leaves the buttons on the main screen to it.
+     */
+    var onboardingComplete: Boolean
+        get() = prefs.getBoolean(KEY_ONBOARDING_COMPLETE, false)
+        set(value) = prefs.edit().putBoolean(KEY_ONBOARDING_COMPLETE, value).apply()
+
     fun grantPass(packageName: String) {
         prefs.edit().putBoolean(passKey(packageName), true).apply()
     }
@@ -49,5 +58,6 @@ class Prefs(context: Context) {
     companion object {
         private const val KEY_GUARDED = "guarded_packages"
         private const val KEY_SETUP_DONE = "setup_done"
+        private const val KEY_ONBOARDING_COMPLETE = "onboarding_complete"
     }
 }

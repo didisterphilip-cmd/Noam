@@ -19,6 +19,7 @@ There is no way past the countdown: back does nothing while it runs.
 | The pause screen | `GateActivity.kt` | Runs one 10s animator that drives both the line and the two counts of five, then reveals the buttons. |
 | The line | `SweepLineView.kt` | A custom view drawing a full-width line at a height set by `progress` (0 = bottom, 1 = top). |
 | Your list | `AppPickerActivity.kt`, `Prefs.kt` | Every launchable app, with the guarded ones ticked; stored in `SharedPreferences`. |
+| Setup | `MainActivity.kt`, `SettingsNavigator.kt` | The first-run walkthrough, and the deep links onto each permission's settings page. |
 
 ### Passes
 
@@ -41,20 +42,32 @@ appear as a card in Recents until the system prunes it.
 
 ## Setup on the phone
 
-Gate installs into the normal app drawer like any other app. Opening it the first
-time goes straight to the list of apps on the phone so you can tick what to guard;
-after that the main screen has three steps:
+Gate installs into the normal app drawer like any other app, and the first open
+walks the whole setup through in order:
 
-1. **Turn on the Gate service** — Accessibility settings → Gate → On. Without this
-   the app cannot tell which app you are opening.
-2. **Allow display over other apps** — this is what lets the gate reliably come to
-   the front from the background on Android 10 and later. Skipping it means the
-   gate may silently fail to appear on some phones.
-3. **Choose the apps** — the same picker, reachable any time, with a search box.
-   Ticks save as you make them.
+1. **The phone's app list** opens straight away — tick what to guard, tap Done.
+2. **"Let Gate see which app you open"** — a dialog explaining the accessibility
+   service, with a button onto the Accessibility settings page (deep-linked to
+   Gate's own row where the phone supports it).
+3. **"One more: display over other apps"** — same again for the overlay
+   permission, landing directly on Gate's toggle.
+
+Neither permission can be granted from inside an app; Android insists the user
+turns them on themselves, so all any app can do is explain and open the right
+page. Declining ends the walkthrough — the three cards on the main screen stay as
+the way to grant them later, and to change the app list at any time.
+
+If the accessibility toggle is **greyed out**, that is Android 13+ blocking
+"restricted settings" for apps installed outside the Play Store. Gate notices when
+you come back without having switched it on and offers a shortcut to App info,
+where ⋮ → *Allow restricted settings* unblocks it.
 
 Use **Preview the gate** on the main screen to see the countdown without opening a
 guarded app.
+
+Some phones (Samsung, Xiaomi, OnePlus, Huawei) kill background services
+aggressively. If the gate stops appearing after a day, exempt Gate from battery
+optimisation in Settings → Apps → Gate → Battery.
 
 ## Building
 

@@ -30,6 +30,17 @@
     <string name="pass_explainer">The count does not come back while you are in the app — switch screens, follow links, do whatever you came for. It returns the next time you open the app, once you have been away for half a minute.</string>
     <string name="preview_button">Preview the gate</string>
 
+    <!-- First-run walkthrough -->
+    <string name="ask_open_settings">Open settings</string>
+    <string name="ask_later">Not now</string>
+    <string name="ask_service_title">Let Gate see which app you open</string>
+    <string name="ask_service_body">Android only lets you switch this on yourself, in Accessibility settings. Tap below and Gate will take you to the right page — find Gate in the list and turn it on.\n\nGate is told which app came to the front and nothing else: it cannot read what is on your screen.</string>
+    <string name="ask_overlay_title">One more: display over other apps</string>
+    <string name="ask_overlay_body">This is what lets the count appear in front of the app you tapped. Without it Android can quietly block the gate from showing.\n\nTap below and turn the switch on for Gate.</string>
+    <string name="restricted_title">Is the switch greyed out?</string>
+    <string name="restricted_body">Android blocks accessibility settings for apps installed outside the Play Store until you allow it.\n\nOpen app info, tap the three dots in the top corner, choose "Allow restricted settings", then go back to Accessibility and switch Gate on.</string>
+    <string name="restricted_open_app_info">Open app info</string>
+
     <string name="search_apps">Search apps</string>
     <string name="picker_intro">Pick the apps you want to stop and count in front of. You can change this list later from the Gate app.</string>
     <string name="picker_done">Done</string>

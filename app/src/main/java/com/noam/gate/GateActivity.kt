@@ -36,7 +36,8 @@ class GateActivity : AppCompatActivity() {
     private var targetSite: String? = null
 
     /** What the pass and the usage record are kept under: the site, or the app. */
-    private val targetKey: String get() = targetSite ?: targetPackage
+    private val targetKey: String
+        get() = targetSite?.let { GateTarget.forSite(it) } ?: targetPackage
 
     private var task: GateTask? = null
     private val handler = Handler(Looper.getMainLooper())
@@ -124,7 +125,7 @@ class GateActivity : AppCompatActivity() {
         if (lastEntry == null) {
             binding.statLastUsed.setText(R.string.stat_last_never)
         } else {
-            val ago = formatAgo(System.currentTimeMillis() - lastEntry)
+            val ago = Ago.format(this, lastEntry)
             highlight(binding.statLastUsed, getString(R.string.stat_last_used, ago), ago)
         }
 
@@ -160,18 +161,6 @@ class GateActivity : AppCompatActivity() {
         span.setSpan(ForegroundColorSpan(accent), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         span.setSpan(StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         view.text = span
-    }
-
-    private fun formatAgo(elapsed: Long): String {
-        val minutes = elapsed / 60_000L
-        val hours = minutes / 60L
-        val days = hours / 24L
-        return when {
-            minutes < 1L -> getString(R.string.ago_moments)
-            hours < 1L -> resources.getQuantityString(R.plurals.ago_minutes, minutes.toInt(), minutes.toInt())
-            days < 1L -> resources.getQuantityString(R.plurals.ago_hours, hours.toInt(), hours.toInt())
-            else -> resources.getQuantityString(R.plurals.ago_days, days.toInt(), days.toInt())
-        }
     }
 
     /** Continue: hand out a pass so the gate does not fire again, then go through. */

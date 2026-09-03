@@ -118,16 +118,17 @@ class GateAccessibilityService : AccessibilityService() {
         }
 
         val match = SiteGuard.firstMatch(host, guarded) ?: return
+        val target = GateTarget.forSite(match)
 
         // Coming back to the site after a real absence is a new visit.
         val away = leftAt[host]?.let { now - it } ?: Long.MAX_VALUE
-        if (away > AWAY_GRACE_MS) prefs.clearPass(match)
-        if (prefs.hasPass(match)) return
+        if (away > AWAY_GRACE_MS) prefs.clearPass(target)
+        if (prefs.hasPass(target)) return
 
-        val since = gatedAt[match]?.let { now - it } ?: Long.MAX_VALUE
+        val since = gatedAt[target]?.let { now - it } ?: Long.MAX_VALUE
         if (since < GATE_COOLDOWN_MS) return
 
-        gatedAt[match] = now
+        gatedAt[target] = now
         startActivity(GateActivity.intentFor(this, browserPackage, site = match))
     }
 

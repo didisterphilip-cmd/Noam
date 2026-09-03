@@ -3,6 +3,15 @@ package com.noam.gate
 import android.content.Context
 import android.content.SharedPreferences
 
+/** What the log holds about one app or site over the window. */
+data class UsageStats(
+    val target: String,
+    val attempts: Int,
+    val entries: Int,
+    val declines: Int,
+    val lastEntry: Long?
+)
+
 /**
  * A rolling 24-hour record of what happened at the gate, per app: every time it
  * appeared, every time the user turned back, and when they last went in.
@@ -23,12 +32,30 @@ class UsageLog(context: Context) {
 
     /** The user continued into the app. */
     fun recordEntry(packageName: String) {
+        append(KEY_ENTRIES, packageName)
         prefs.edit().putLong(key(KEY_LAST_ENTRY, packageName), System.currentTimeMillis()).apply()
     }
 
     fun attemptsInWindow(packageName: String) = timestamps(KEY_ATTEMPTS, packageName).size
 
     fun declinesInWindow(packageName: String) = timestamps(KEY_DECLINES, packageName).size
+
+    fun statsFor(target: String) = UsageStats(
+        target = target,
+        attempts = timestamps(KEY_ATTEMPTS, target).size,
+        entries = timestamps(KEY_ENTRIES, target).size,
+        declines = timestamps(KEY_DECLINES, target).size,
+        lastEntry = lastEntry(target)
+    )
+
+    /**
+     * Everything the log knows about, whether or not it is still guarded — an app
+     * removed from the list this morning still happened this morning.
+     */
+    fun everyTarget(): Set<String> =
+        prefs.all.keys.mapNotNullTo(mutableSetOf()) { stored ->
+            PREFIXES.firstOrNull { stored.startsWith(it) }?.let { stored.removePrefix(it) }
+        }
 
     /** When the user last went in, or null if they never have. */
     fun lastEntry(packageName: String): Long? =
@@ -57,7 +84,10 @@ class UsageLog(context: Context) {
 
         private const val KEY_ATTEMPTS = "attempts_"
         private const val KEY_DECLINES = "declines_"
+        private const val KEY_ENTRIES = "entries_"
         private const val KEY_LAST_ENTRY = "last_entry_"
         private const val MAX_ENTRIES = 200
+
+        private val PREFIXES = listOf(KEY_ATTEMPTS, KEY_DECLINES, KEY_ENTRIES, KEY_LAST_ENTRY)
     }
 }

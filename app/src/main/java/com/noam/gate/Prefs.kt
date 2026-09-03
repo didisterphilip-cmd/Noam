@@ -46,7 +46,7 @@ class Prefs(context: Context) {
 
     fun removeSite(host: String) {
         guardedSites = guardedSites - host
-        clearPass(host)
+        clearPass(GateTarget.forSite(host))
     }
 
     /** Which task the gate asks for. */

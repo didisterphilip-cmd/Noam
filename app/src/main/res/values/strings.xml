@@ -6,6 +6,14 @@
 
     <string name="title_pick_apps">Apps to guard</string>
     <string name="title_sites">Websites to guard</string>
+    <string name="title_stats">The last 24 hours</string>
+    <string name="stats_total_reached">reached for</string>
+    <string name="stats_total_entered">went in</string>
+    <string name="stats_total_turned_back">turned back</string>
+    <string name="stats_counts">Reached for %1$d · went in %2$d · turned back %3$d</string>
+    <string name="stats_untouched">Not reached for today</string>
+    <string name="stats_empty">Nothing to show yet. The gate has not stopped you in the last 24 hours.</string>
+    <string name="stats_button">See the numbers</string>
     <string name="sites_intro">Type an address. Gate stops at that host and everything under it — youtube.com also covers m.youtube.com.</string>
     <string name="sites_hint">youtube.com</string>
     <string name="sites_add">Add</string>

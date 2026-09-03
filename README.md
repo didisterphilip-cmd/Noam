@@ -48,7 +48,22 @@ There is no way past the countdown: back does nothing while it runs.
 | Your list | `AppPickerActivity.kt`, `Prefs.kt` | Every launchable app, with the guarded ones ticked; stored in `SharedPreferences`. |
 | Setup | `MainActivity.kt`, `SettingsNavigator.kt` | The first-run walkthrough, and the deep links onto each permission's settings page. |
 | Websites | `SiteGuard.kt`, `SiteListActivity.kt` | Turning what you type into a host, spotting browsers, and finding the address bar inside one. |
-| The record | `UsageLog.kt` | A rolling 24-hour log per app — every gate shown, every turning back, and when the app was last entered. |
+| The record | `UsageLog.kt`, `StatsActivity.kt` | A rolling 24-hour log per app and per site, and the page that shows all of it. |
+
+### The numbers
+
+Every gate is recorded against one target: the app's package, or the site written
+as `site:youtube.com` (`GateTarget`). So the counts are per app **and** per site —
+guarding both the YouTube app and youtube.com keeps two separate tallies.
+
+Three lines appear on the gate itself, and **See the numbers** on the setup screen
+opens the whole log: totals across the last 24 hours, then a row per app and site
+sorted by how often it was reached for. Each row carries one bar — the share of
+reaching-for that was turned back — on a neutral track. One measure, one mark; the
+counts are written out beside it, so nothing is encoded in colour alone.
+
+Anything the log remembers is listed even if it has since been taken off the
+guard list: it still happened today.
 
 ### Websites
 

@@ -53,6 +53,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        binding.statsButton.setOnClickListener {
+            startActivity(Intent(this, StatsActivity::class.java))
+        }
+
         binding.previewButton.setOnClickListener {
             val sample = prefs.guardedPackages.firstOrNull() ?: packageName
             startActivity(GateActivity.intentFor(this, sample, preview = true))

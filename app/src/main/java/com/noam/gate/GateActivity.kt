@@ -65,11 +65,9 @@ class GateActivity : AppCompatActivity() {
         }
         targetPackage = packageName
 
-        val label = AppRepository.labelOf(this, packageName)
-        binding.appName.text = label
+        // The icon is the only cue about which app this is — naming it invites
+        // you to think about the app instead of the breath.
         binding.appIcon.setImageDrawable(AppRepository.iconOf(this, packageName))
-        binding.buttonContinue.text = getString(R.string.gate_continue)
-        binding.buttonStop.text = getString(R.string.gate_stop)
 
         startCountdown()
     }

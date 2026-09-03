@@ -33,16 +33,6 @@
             android:textColor="@color/gate_accent"
             android:textSize="14sp"
             android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/appName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textColor="@color/gate_text"
-            android:textSize="26sp"
-            android:textStyle="bold"
-            tools:text="Instagram" />
     </LinearLayout>
 
     <!-- The ten seconds: a line sweeping up and back down, with the count on top -->

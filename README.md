@@ -5,7 +5,11 @@ An Android app that puts a ten-second pause in front of the apps you choose.
 You tap Instagram (or whatever is on your list). Instead of Instagram, a full-screen
 count appears on a pale blue ground: **INHALE** while a line sweeps up the screen
 and the number counts 5 → 1, then **EXHALE** as the line comes back down counting
-5 → 1 again. Only then do two buttons appear:
+5 → 1 again. Only then do two buttons appear.
+
+The app is never named on this screen — its icon is the only cue. Ten seconds of
+breathing works better without the name of what you are reaching for in front of
+you. The buttons are:
 
 - **I don't want to use the app** — the large button. Leaves the app and closes it.
 - **Continue to the app** — the small, quiet one underneath. Opens the app you tapped.

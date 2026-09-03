@@ -131,6 +131,73 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- Which task the gate asks for -->
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Card.Gate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp">
+
+            <LinearLayout
+                style="@style/CardContent.Gate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    style="@style/CardTitle.Gate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/task_title" />
+
+                <RadioGroup
+                    android:id="@+id/taskGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/taskBreath"
+                        style="@style/TaskChoice"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/task_breath" />
+
+                    <TextView
+                        style="@style/TaskChoiceBody"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/task_breath_body" />
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/taskMath"
+                        style="@style/TaskChoice"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/task_math" />
+
+                    <TextView
+                        style="@style/TaskChoiceBody"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/task_math_body" />
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/taskPsalm"
+                        style="@style/TaskChoice"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/task_psalm" />
+
+                    <TextView
+                        style="@style/TaskChoiceBody"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/task_psalm_body" />
+                </RadioGroup>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
         <!-- How a pass behaves -->
         <com.google.android.material.card.MaterialCardView
             style="@style/Card.Gate"

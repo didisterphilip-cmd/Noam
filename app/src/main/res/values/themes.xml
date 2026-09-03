@@ -48,6 +48,21 @@
         <item name="android:layout_marginTop">6dp</item>
     </style>
 
+    <style name="TaskChoice">
+        <item name="android:textColor">@color/gate_text</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:paddingStart">6dp</item>
+        <item name="android:minHeight">40dp</item>
+    </style>
+
+    <style name="TaskChoiceBody">
+        <item name="android:textColor">@color/gate_text_muted</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:lineSpacingExtra">2dp</item>
+        <item name="android:layout_marginStart">38dp</item>
+        <item name="android:layout_marginBottom">10dp</item>
+    </style>
+
     <style name="GateStat">
         <item name="android:textColor">@color/gate_text_muted</item>
         <item name="android:textSize">13sp</item>

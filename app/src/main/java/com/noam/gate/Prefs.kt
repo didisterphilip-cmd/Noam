@@ -29,6 +29,11 @@ class Prefs(context: Context) {
         if (!guarded) clearPass(packageName)
     }
 
+    /** Which task the gate asks for. */
+    var taskType: TaskType
+        get() = TaskType.from(prefs.getString(KEY_TASK, null))
+        set(value) = prefs.edit().putString(KEY_TASK, value.key).apply()
+
     /** False until the user has been through the pick-your-apps screen once. */
     var setupDone: Boolean
         get() = prefs.getBoolean(KEY_SETUP_DONE, false)
@@ -57,6 +62,7 @@ class Prefs(context: Context) {
 
     companion object {
         private const val KEY_GUARDED = "guarded_packages"
+        private const val KEY_TASK = "task_type"
         private const val KEY_SETUP_DONE = "setup_done"
         private const val KEY_ONBOARDING_COMPLETE = "onboarding_complete"
     }

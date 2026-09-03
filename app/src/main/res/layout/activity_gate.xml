@@ -10,7 +10,7 @@
     android:paddingTop="64dp"
     android:paddingBottom="36dp">
 
-    <!-- Which app is being opened -->
+    <!-- Which app is being opened, and what the gate is asking for -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -24,7 +24,7 @@
             android:contentDescription="@string/app_icon" />
 
         <TextView
-            android:id="@+id/breathText"
+            android:id="@+id/taskLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -35,33 +35,133 @@
             android:textStyle="bold" />
     </LinearLayout>
 
-    <!-- The ten seconds: a line sweeping up and back down, with the count on top -->
+    <!-- The task. One of these three is shown, whichever was chosen in setup. -->
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
         android:layout_weight="1">
 
-        <com.noam.gate.SweepLineView
-            android:id="@+id/sweepLine"
+        <!-- Breathe -->
+        <FrameLayout
+            android:id="@+id/breathGroup"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:visibility="gone">
 
-        <TextView
-            android:id="@+id/countdownText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:alpha="0.9"
-            android:fontFamily="sans-serif-light"
-            android:textColor="@color/gate_text"
-            android:textSize="80sp"
-            tools:text="10" />
+            <com.noam.gate.SweepLineView
+                android:id="@+id/sweepLine"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <TextView
+                android:id="@+id/countdownText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:alpha="0.9"
+                android:fontFamily="sans-serif-light"
+                android:textColor="@color/gate_text"
+                android:textSize="80sp"
+                tools:text="5" />
+        </FrameLayout>
+
+        <!-- Arithmetic -->
+        <LinearLayout
+            android:id="@+id/mathGroup"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/mathProblem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-light"
+                android:textColor="@color/gate_text"
+                android:textSize="46sp"
+                tools:text="47 + 26" />
+
+            <EditText
+                android:id="@+id/mathInput"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:autofillHints=""
+                android:gravity="center"
+                android:hint="@string/math_hint"
+                android:imeOptions="actionDone"
+                android:inputType="numberSigned"
+                android:maxLength="6"
+                android:textColor="@color/gate_text"
+                android:textColorHint="@color/gate_text_muted"
+                android:textSize="26sp" />
+
+            <TextView
+                android:id="@+id/mathError"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/math_wrong"
+                android:textColor="@color/gate_text_muted"
+                android:textSize="13sp"
+                android:visibility="invisible" />
+
+            <Button
+                android:id="@+id/mathCheck"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="180dp"
+                android:layout_height="52dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/math_check"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <!-- A chapter of Tehillim -->
+        <LinearLayout
+            android:id="@+id/psalmGroup"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:fillViewport="true">
+
+                <TextView
+                    android:id="@+id/psalmText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:lineSpacingExtra="10dp"
+                    android:paddingVertical="8dp"
+                    android:textColor="@color/gate_text"
+                    android:textDirection="rtl"
+                    android:textSize="21sp"
+                    tools:text="הַלְלוּ אֶת־יְהוָה כָּל־גּוֹיִם" />
+            </ScrollView>
+
+            <Button
+                android:id="@+id/psalmRead"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="wrap_content"
+                android:layout_height="52dp"
+                android:layout_marginTop="12dp"
+                android:text="@string/psalm_read"
+                android:textSize="15sp"
+                android:visibility="invisible" />
+        </LinearLayout>
     </FrameLayout>
 
     <!--
-        The two buttons. They keep their space from the start (invisible rather
-        than gone) so nothing jumps when the countdown ends.
+        The two buttons, and what the last day looked like. They keep their space
+        from the start (invisible rather than gone) so nothing jumps at the end.
     -->
     <LinearLayout
         android:id="@+id/decisionGroup"
@@ -72,7 +172,6 @@
         android:orientation="vertical"
         android:visibility="invisible">
 
-        <!-- What the last day looked like, in the same reveal as the buttons -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

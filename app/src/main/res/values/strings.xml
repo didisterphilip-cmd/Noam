@@ -10,6 +10,11 @@
     <!-- Gate screen -->
     <string name="breath_inhale">INHALE</string>
     <string name="breath_exhale">EXHALE</string>
+    <string name="math_progress">PROBLEM %1$d OF %2$d</string>
+    <string name="math_hint">Answer</string>
+    <string name="math_check">Check</string>
+    <string name="math_wrong">Not that. Try again.</string>
+    <string name="psalm_read">I have read it</string>
     <string name="gate_stop">I don\'t want to use the app</string>
     <string name="gate_continue">Continue to the app</string>
 
@@ -52,6 +57,14 @@
     <string name="step_apps_title">3. Choose the apps</string>
     <string name="step_apps_none">No apps chosen yet.</string>
     <string name="step_apps_button">Choose apps</string>
+
+    <string name="task_title">The task</string>
+    <string name="task_breath">Breathe for ten seconds</string>
+    <string name="task_breath_body">A line rises for five seconds and falls for five. Nothing to press.</string>
+    <string name="task_math">Solve three sums</string>
+    <string name="task_math_body">Three problems — adding, subtracting, multiplying or dividing — each answered by typing the number.</string>
+    <string name="task_psalm">Read a chapter of Tehillim</string>
+    <string name="task_psalm_body">A short chapter in Hebrew, chosen at random from the ten under 250 characters. The button to continue appears once there has been time to read it.</string>
 
     <string name="settings_title">Once you continue</string>
     <string name="pass_explainer">The count does not come back while you are in the app — switch screens, follow links, do whatever you came for. It returns the next time you open the app, once you have been away for half a minute.</string>

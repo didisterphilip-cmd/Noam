@@ -2,10 +2,16 @@
 
 An Android app that puts a ten-second pause in front of the apps you choose.
 
-You tap Instagram (or whatever is on your list). Instead of Instagram, a full-screen
-count appears on a pale blue ground: **INHALE** while a line sweeps up the screen
-and the number counts 5 → 1, then **EXHALE** as the line comes back down counting
-5 → 1 again. Only then do two buttons appear.
+You tap Instagram (or whatever is on your list). Instead of Instagram, a pale blue
+screen asks something of you first. Which thing is your choice, in setup:
+
+| Task | What it asks |
+| --- | --- |
+| **Breathe** | Ten seconds. **INHALE** while a line sweeps up the screen and the number counts 5 → 1, then **EXHALE** as it comes back down counting 5 → 1 again. Nothing to press. |
+| **Three sums** | Three problems, one each from three of adding, subtracting, multiplying and dividing. Type each answer. A wrong one keeps the same problem. |
+| **A chapter of Tehillim** | A short chapter in Hebrew, at random from the ten under 250 characters. *I have read it* appears after five seconds. |
+
+Only when the task is done do two buttons appear.
 
 The app is never named on this screen — its icon is the only cue. Ten seconds of
 breathing works better without the name of what you are reaching for in front of
@@ -34,6 +40,8 @@ There is no way past the countdown: back does nothing while it runs.
 | Foreground watcher | `GateAccessibilityService.kt` | An accessibility service that hears `TYPE_WINDOW_STATE_CHANGED` and, when the app coming forward is on your list, launches the gate over it. |
 | The pause screen | `GateActivity.kt` | Runs one 10s animator that drives both the line and the two counts of five, then reveals the buttons. |
 | The line | `SweepLineView.kt` | A custom view drawing a full-width line at a height set by `progress` (0 = bottom, 1 = top) — the pacer to breathe along with. |
+| The tasks | `BreathTask.kt`, `MathTask.kt`, `PsalmTask.kt` | One `GateTask` each: shown, started, and calling back once when satisfied. |
+| Tehillim | `PsalmRepository.kt`, `assets/psalms_he.json` | All 150 chapters from the Westminster Leningrad Codex; only those under `MAX_CHARS` are ever drawn from. |
 | Your list | `AppPickerActivity.kt`, `Prefs.kt` | Every launchable app, with the guarded ones ticked; stored in `SharedPreferences`. |
 | Setup | `MainActivity.kt`, `SettingsNavigator.kt` | The first-run walkthrough, and the deep links onto each permission's settings page. |
 | The record | `UsageLog.kt` | A rolling 24-hour log per app — every gate shown, every turning back, and when the app was last entered. |
@@ -85,6 +93,15 @@ guarded app.
 Some phones (Samsung, Xiaomi, OnePlus, Huawei) kill background services
 aggressively. If the gate stops appearing after a day, exempt Gate from battery
 optimisation in Settings → Apps → Gate → Battery.
+
+### The Hebrew text
+
+`assets/psalms_he.json` is the Westminster Leningrad Codex, via Open Scriptures
+`morphhb`, with cantillation marks stripped and the vowel points kept. All 150
+chapters are bundled so the length limit is a one-line change:
+`PsalmRepository.MAX_CHARS`, at 250, gives ten chapters — 93, 100, 117, 120, 123,
+128, 131, 133, 134 and 150. Lowering it to 100 leaves only Psalm 117. See
+`tools/` for how the asset is regenerated.
 
 ## Building
 

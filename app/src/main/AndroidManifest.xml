@@ -51,6 +51,7 @@
             android:noHistory="true"
             android:showWhenLocked="false"
             android:configChanges="orientation|screenSize|keyboardHidden"
+            android:windowSoftInputMode="adjustResize"
             android:theme="@style/Theme.Gate.Fullscreen" />
 
         <service

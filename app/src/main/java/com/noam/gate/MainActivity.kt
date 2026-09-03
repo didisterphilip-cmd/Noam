@@ -42,6 +42,14 @@ class MainActivity : AppCompatActivity() {
         binding.overlayButton.setOnClickListener { SettingsNavigator.openOverlaySettings(this) }
         binding.appsButton.setOnClickListener { openAppPicker(onboarding = false) }
 
+        binding.taskGroup.setOnCheckedChangeListener { _, checkedId ->
+            prefs.taskType = when (checkedId) {
+                R.id.taskMath -> TaskType.MATH
+                R.id.taskPsalm -> TaskType.PSALM
+                else -> TaskType.BREATH
+            }
+        }
+
         binding.previewButton.setOnClickListener {
             val sample = prefs.guardedPackages.firstOrNull() ?: packageName
             startActivity(GateActivity.intentFor(this, sample, preview = true))
@@ -84,6 +92,14 @@ class MainActivity : AppCompatActivity() {
             if (overlayOn) R.string.step_overlay_body_on else R.string.step_overlay_body_off
         )
         binding.overlayButton.isEnabled = !overlayOn
+
+        binding.taskGroup.check(
+            when (prefs.taskType) {
+                TaskType.BREATH -> R.id.taskBreath
+                TaskType.MATH -> R.id.taskMath
+                TaskType.PSALM -> R.id.taskPsalm
+            }
+        )
 
         val guarded = prefs.guardedPackages.size
         binding.appsBody.text = if (guarded == 0) {

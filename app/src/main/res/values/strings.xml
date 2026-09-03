@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Gate</string>
+    <string name="service_label">Gate</string>
+    <string name="service_description">Gate needs to know which app comes to the foreground so it can show the ten-second pause screen before the apps you chose. It does not read the contents of your screen and nothing leaves your phone.</string>
+
+    <string name="title_pick_apps">Apps to guard</string>
+    <string name="app_icon">App icon</string>
+
+    <!-- Gate screen -->
+    <string name="gate_heading">YOU ARE ABOUT TO OPEN</string>
+    <string name="gate_stop">I don\'t want to use the app</string>
+    <string name="gate_continue">Continue to the app</string>
+
+    <!-- Main screen -->
+    <string name="main_subtitle">Ten seconds between reaching for an app and being inside it.</string>
+    <string name="step_service_title">1. Turn on the Gate service</string>
+    <string name="step_service_body_off">Off — Gate cannot see which app you are opening yet. Open Accessibility settings and switch Gate on.</string>
+    <string name="step_service_body_on">On — Gate is watching for the apps you chose.</string>
+    <string name="step_service_button">Open Accessibility settings</string>
+    <string name="step_overlay_title">2. Allow display over other apps</string>
+    <string name="step_overlay_body_off">Not granted. Without it some phones stop the gate from appearing over the app you opened.</string>
+    <string name="step_overlay_body_on">Granted — the gate can always come to the front.</string>
+    <string name="step_overlay_button">Grant permission</string>
+    <string name="step_apps_title">3. Choose the apps</string>
+    <string name="step_apps_none">No apps chosen yet.</string>
+    <string name="step_apps_button">Choose apps</string>
+
+    <string name="settings_title">Behaviour</string>
+    <string name="pass_minutes_label">After continuing, stay in for up to %1$d minutes</string>
+    <string name="reset_on_leave_title">Ask again after you leave</string>
+    <string name="reset_on_leave_body">Once you have been out of the app for half a minute, opening it again brings the gate back even if that time is not up.</string>
+    <string name="preview_button">Preview the gate</string>
+
+    <string name="search_apps">Search apps</string>
+
+    <plurals name="apps_guarded">
+        <item quantity="one">%1$d app guarded</item>
+        <item quantity="other">%1$d apps guarded</item>
+    </plurals>
+</resources>

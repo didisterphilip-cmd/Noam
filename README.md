@@ -13,6 +13,9 @@ screen asks something of you first. Which thing is your choice, in setup:
 
 Only when the task is done do two buttons appear.
 
+Websites work the same way: add `youtube.com` to the list and the gate stops you
+when that site opens in a browser, whichever browser it is.
+
 The app is never named on this screen — its icon is the only cue. Ten seconds of
 breathing works better without the name of what you are reaching for in front of
 you.
@@ -44,7 +47,27 @@ There is no way past the countdown: back does nothing while it runs.
 | Tehillim | `PsalmRepository.kt`, `assets/psalms_he.json` | All 150 chapters from the Westminster Leningrad Codex; only those under `MAX_CHARS` are ever drawn from. |
 | Your list | `AppPickerActivity.kt`, `Prefs.kt` | Every launchable app, with the guarded ones ticked; stored in `SharedPreferences`. |
 | Setup | `MainActivity.kt`, `SettingsNavigator.kt` | The first-run walkthrough, and the deep links onto each permission's settings page. |
+| Websites | `SiteGuard.kt`, `SiteListActivity.kt` | Turning what you type into a host, spotting browsers, and finding the address bar inside one. |
 | The record | `UsageLog.kt` | A rolling 24-hour log per app — every gate shown, every turning back, and when the app was last entered. |
+
+### Websites
+
+A site is caught by reading the browser's address bar through the accessibility
+service. Three limits on that, all in `GateAccessibilityService.checkBrowser`:
+
+- **Only while the website list is not empty.** With no sites guarded, the window
+  content is never touched at all — the app-only setup reads nothing.
+- **Only in browsers.** A known list of browser packages plus a name check for
+  forks; every other app is left alone.
+- **Only the address**, at most once every 400ms, and it is matched and discarded.
+  No page content is read, and no URL is stored.
+
+`youtube.com` guards the host and everything under it — `m.youtube.com`,
+`music.youtube.com` — but not `myyoutube.com`.
+
+Declining on a site steps back off the page and leaves the browser, but does
+**not** kill it: your other tabs would go with it. Declining on an app still
+closes the app.
 
 ### Passes
 
@@ -124,9 +147,15 @@ with the Android SDK installed:
 
 ## Privacy
 
-Nothing leaves the phone. The accessibility service is configured with
-`canRetrieveWindowContent="false"`: it is told which app has come to the front and
-nothing about what is on the screen. The only stored data is your app list and the
+Nothing leaves the phone, and nothing is written to a network at any point.
+
+Guarding websites needs the accessibility service to read the browser's address
+bar, so `canRetrieveWindowContent` is now `true` and Android will warn you about
+that when you switch the service on. The warning is accurate about what the
+service *could* do; what it actually does is bounded by the three limits under
+**Websites** above. If you guard no websites, it reads nothing.
+
+The only stored data is your app list, your website list and the
 passes and the 24-hour usage counts, in this app's own `SharedPreferences`. Nothing
 older than 24 hours is kept, apart from the timestamp of the last entry into each
 app.

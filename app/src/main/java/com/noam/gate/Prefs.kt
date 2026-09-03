@@ -29,6 +29,26 @@ class Prefs(context: Context) {
         if (!guarded) clearPass(packageName)
     }
 
+    /**
+     * Hosts to stop at, stored bare: "youtube.com" guards every page on it and on
+     * its subdomains. Empty means the service never looks at a browser at all.
+     */
+    var guardedSites: Set<String>
+        get() = prefs.getStringSet(KEY_SITES, emptySet()) ?: emptySet()
+        set(value) = prefs.edit().putStringSet(KEY_SITES, value).apply()
+
+    /** Returns the host that was added, or null if there was no host in the text. */
+    fun addSite(typed: String): String? {
+        val host = SiteGuard.hostOf(typed) ?: return null
+        guardedSites = guardedSites + host
+        return host
+    }
+
+    fun removeSite(host: String) {
+        guardedSites = guardedSites - host
+        clearPass(host)
+    }
+
     /** Which task the gate asks for. */
     var taskType: TaskType
         get() = TaskType.from(prefs.getString(KEY_TASK, null))
@@ -62,6 +82,7 @@ class Prefs(context: Context) {
 
     companion object {
         private const val KEY_GUARDED = "guarded_packages"
+        private const val KEY_SITES = "guarded_sites"
         private const val KEY_TASK = "task_type"
         private const val KEY_SETUP_DONE = "setup_done"
         private const val KEY_ONBOARDING_COMPLETE = "onboarding_complete"

@@ -131,6 +131,40 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- Step 4: the website list -->
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Card.Gate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp">
+
+            <LinearLayout
+                style="@style/CardContent.Gate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    style="@style/CardTitle.Gate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/step_sites_title" />
+
+                <TextView
+                    android:id="@+id/sitesBody"
+                    style="@style/CardBody.Gate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <Button
+                    android:id="@+id/sitesButton"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/step_sites_button" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
         <!-- Which task the gate asks for -->
         <com.google.android.material.card.MaterialCardView
             style="@style/Card.Gate"

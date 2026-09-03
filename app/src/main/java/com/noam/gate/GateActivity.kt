@@ -31,6 +31,13 @@ class GateActivity : AppCompatActivity() {
     private lateinit var usage: UsageLog
 
     private var targetPackage: String = ""
+
+    /** Set when the gate was raised for a website rather than an app. */
+    private var targetSite: String? = null
+
+    /** What the pass and the usage record are kept under: the site, or the app. */
+    private val targetKey: String get() = targetSite ?: targetPackage
+
     private var task: GateTask? = null
     private val handler = Handler(Looper.getMainLooper())
 
@@ -71,14 +78,15 @@ class GateActivity : AppCompatActivity() {
             return
         }
         targetPackage = packageName
+        targetSite = intent.getStringExtra(EXTRA_SITE)
         isPreview = intent.getBooleanExtra(EXTRA_PREVIEW, false)
 
         // The icon is the only cue about which app this is — naming it invites
         // you to think about the app instead of the task.
         binding.appIcon.setImageDrawable(AppRepository.iconOf(this, packageName))
 
-        // Reaching for the app counts whether or not the user goes through.
-        if (!isPreview) usage.recordAttempt(packageName)
+        // Reaching for it counts whether or not the user goes through.
+        if (!isPreview) usage.recordAttempt(targetKey)
 
         startTask()
     }
@@ -112,7 +120,7 @@ class GateActivity : AppCompatActivity() {
 
     /** The last day at this gate, shown alongside the buttons to decide with. */
     private fun showUsage() {
-        val lastEntry = usage.lastEntry(targetPackage)
+        val lastEntry = usage.lastEntry(targetKey)
         if (lastEntry == null) {
             binding.statLastUsed.setText(R.string.stat_last_never)
         } else {
@@ -120,14 +128,14 @@ class GateActivity : AppCompatActivity() {
             highlight(binding.statLastUsed, getString(R.string.stat_last_used, ago), ago)
         }
 
-        val tried = usage.attemptsInWindow(targetPackage).coerceAtLeast(1)
+        val tried = usage.attemptsInWindow(targetKey).coerceAtLeast(1)
         highlight(
             binding.statTried,
             resources.getQuantityString(R.plurals.stat_tried, tried, tried),
             if (tried == 1) null else tried.toString()
         )
 
-        val declined = usage.declinesInWindow(targetPackage)
+        val declined = usage.declinesInWindow(targetKey)
         if (declined == 0) {
             binding.statDeclined.setText(R.string.stat_declined_none)
         } else {
@@ -166,14 +174,17 @@ class GateActivity : AppCompatActivity() {
         }
     }
 
-    /** Continue: hand out a pass so the gate does not fire again, then open the app. */
+    /** Continue: hand out a pass so the gate does not fire again, then go through. */
     private fun continueToApp() {
-        if (!isPreview) usage.recordEntry(targetPackage)
-        prefs.grantPass(targetPackage)
-        val launch = packageManager.getLaunchIntentForPackage(targetPackage)
-        if (launch != null) {
-            launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(launch)
+        if (!isPreview) usage.recordEntry(targetKey)
+        prefs.grantPass(targetKey)
+
+        // A guarded site is already loaded in the browser behind this screen, so
+        // there is nothing to launch — getting out of the way is enough.
+        if (targetSite == null) {
+            packageManager.getLaunchIntentForPackage(targetPackage)?.let {
+                startActivity(it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            }
         }
         finish()
     }
@@ -183,24 +194,30 @@ class GateActivity : AppCompatActivity() {
      * background, and take this screen out of the way as well.
      */
     private fun declineAndClose() {
-        if (!isPreview) usage.recordDecline(targetPackage)
-        prefs.clearPass(targetPackage)
+        if (!isPreview) usage.recordDecline(targetKey)
+        prefs.clearPass(targetKey)
 
-        // The service can go home and then kill the app; without it we can at
-        // least leave the app.
-        if (!GateAccessibilityService.closeApp(targetPackage)) {
+        // For a site: step back off the page and leave the browser running, so the
+        // user's other tabs survive. For an app: leave it and close it.
+        val handled =
+            if (targetSite != null) GateAccessibilityService.closeSite()
+            else GateAccessibilityService.closeApp(targetPackage)
+
+        if (!handled) {
             startActivity(
                 Intent(Intent.ACTION_MAIN)
                     .addCategory(Intent.CATEGORY_HOME)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             )
-            val packageToKill = targetPackage
-            handler.postDelayed({
-                runCatching {
-                    val am = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-                    am.killBackgroundProcesses(packageToKill)
-                }
-            }, KILL_DELAY_MS)
+            if (targetSite == null) {
+                val packageToKill = targetPackage
+                handler.postDelayed({
+                    runCatching {
+                        val am = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+                        am.killBackgroundProcesses(packageToKill)
+                    }
+                }, KILL_DELAY_MS)
+            }
         }
 
         finishAndRemoveTask()
@@ -224,6 +241,7 @@ class GateActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_PACKAGE = "com.noam.gate.extra.PACKAGE"
+        const val EXTRA_SITE = "com.noam.gate.extra.SITE"
         const val EXTRA_PREVIEW = "com.noam.gate.extra.PREVIEW"
 
         private const val KILL_DELAY_MS = 400L
@@ -232,9 +250,15 @@ class GateActivity : AppCompatActivity() {
         @Volatile
         var isShowing: Boolean = false
 
-        fun intentFor(context: Context, packageName: String, preview: Boolean = false): Intent =
+        fun intentFor(
+            context: Context,
+            packageName: String,
+            site: String? = null,
+            preview: Boolean = false
+        ): Intent =
             Intent(context, GateActivity::class.java)
                 .putExtra(EXTRA_PACKAGE, packageName)
+                .putExtra(EXTRA_SITE, site)
                 .putExtra(EXTRA_PREVIEW, preview)
                 .addFlags(
                     Intent.FLAG_ACTIVITY_NEW_TASK or

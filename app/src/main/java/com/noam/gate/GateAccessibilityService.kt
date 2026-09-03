@@ -23,6 +23,10 @@ class GateAccessibilityService : AccessibilityService() {
     /** Last app we saw in the foreground, so we can tell when the user leaves one. */
     private var lastPackage: String? = null
 
+    /** Last host seen in a browser address bar, and when it was last read. */
+    private var lastHost: String? = null
+    private var lastUrlRead = 0L
+
     /** Uptime at which each guarded app was last left, used to decide when a pass is spent. */
     private val leftAt = mutableMapOf<String, Long>()
 
@@ -53,10 +57,13 @@ class GateAccessibilityService : AccessibilityService() {
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        if (event == null || event.eventType != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) return
-
+        if (event == null) return
         val packageName = event.packageName?.toString() ?: return
         if (packageName == this.packageName) return
+
+        if (SiteGuard.isBrowser(packageName)) checkBrowser(packageName)
+
+        if (event.eventType != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) return
         // Keyboards, the notification shade and other overlays sit on top of the app
         // that is really in the foreground; they should not count as leaving it.
         if (isTransientWindow(packageName)) return
@@ -88,8 +95,72 @@ class GateAccessibilityService : AccessibilityService() {
 
     override fun onInterrupt() = Unit
 
+    /**
+     * Read the address bar of the browser in front and gate the page if its host is
+     * on the list.
+     *
+     * Nothing is read at all while no sites are guarded: the window content is only
+     * ever touched once the user has asked for a site to be watched.
+     */
+    private fun checkBrowser(browserPackage: String) {
+        val guarded = prefs.guardedSites
+        if (guarded.isEmpty()) return
+        if (GateActivity.isShowing) return
+
+        val now = SystemClock.elapsedRealtime()
+        if (now - lastUrlRead < URL_READ_INTERVAL_MS) return
+        lastUrlRead = now
+
+        val host = SiteGuard.hostOf(readAddressBar(browserPackage)) ?: return
+        if (host != lastHost) {
+            lastHost?.let { leftAt[it] = now }
+            lastHost = host
+        }
+
+        val match = SiteGuard.firstMatch(host, guarded) ?: return
+
+        // Coming back to the site after a real absence is a new visit.
+        val away = leftAt[host]?.let { now - it } ?: Long.MAX_VALUE
+        if (away > AWAY_GRACE_MS) prefs.clearPass(match)
+        if (prefs.hasPass(match)) return
+
+        val since = gatedAt[match]?.let { now - it } ?: Long.MAX_VALUE
+        if (since < GATE_COOLDOWN_MS) return
+
+        gatedAt[match] = now
+        startActivity(GateActivity.intentFor(this, browserPackage, site = match))
+    }
+
+    /** The text in the browser's address bar, or null if it could not be found. */
+    private fun readAddressBar(browserPackage: String): String? {
+        val root = rootInActiveWindow ?: return null
+        try {
+            for (id in SiteGuard.URL_BAR_IDS) {
+                val nodes = root.findAccessibilityNodeInfosByViewId("$browserPackage:id/$id")
+                if (nodes.isNullOrEmpty()) continue
+                try {
+                    return nodes.firstNotNullOfOrNull { it.text?.toString() }
+                } finally {
+                    nodes.forEach { it.recycle() }
+                }
+            }
+            return null
+        } finally {
+            root.recycle()
+        }
+    }
+
     private fun isTransientWindow(packageName: String): Boolean =
         packageName == "com.android.systemui" || packageName.contains("inputmethod")
+
+    /**
+     * Step back off the page and leave the browser. The browser itself is left
+     * running: killing it would take every other tab with it.
+     */
+    private fun leaveSite() {
+        performGlobalAction(GLOBAL_ACTION_BACK)
+        handler.postDelayed({ performGlobalAction(GLOBAL_ACTION_HOME) }, BACK_DELAY_MS)
+    }
 
     /** Go to the home screen and then kill what is left of [packageName]. */
     private fun leaveAndKill(packageName: String) {
@@ -109,6 +180,8 @@ class GateAccessibilityService : AccessibilityService() {
         private const val GATE_COOLDOWN_MS = 2_000L
         private const val AWAY_GRACE_MS = 30_000L
         private const val KILL_DELAY_MS = 400L
+        private const val BACK_DELAY_MS = 250L
+        private const val URL_READ_INTERVAL_MS = 400L
 
         @Volatile
         private var instance: GateAccessibilityService? = null
@@ -120,6 +193,13 @@ class GateAccessibilityService : AccessibilityService() {
         fun closeApp(packageName: String): Boolean {
             val service = instance ?: return false
             service.leaveAndKill(packageName)
+            return true
+        }
+
+        /** Back out of the page and leave the browser, without closing it. */
+        fun closeSite(): Boolean {
+            val service = instance ?: return false
+            service.leaveSite()
             return true
         }
 

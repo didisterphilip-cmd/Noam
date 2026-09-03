@@ -41,6 +41,9 @@ class MainActivity : AppCompatActivity() {
         binding.serviceButton.setOnClickListener { openAccessibilitySettings() }
         binding.overlayButton.setOnClickListener { SettingsNavigator.openOverlaySettings(this) }
         binding.appsButton.setOnClickListener { openAppPicker(onboarding = false) }
+        binding.sitesButton.setOnClickListener {
+            startActivity(Intent(this, SiteListActivity::class.java))
+        }
 
         binding.taskGroup.setOnCheckedChangeListener { _, checkedId ->
             prefs.taskType = when (checkedId) {
@@ -106,6 +109,13 @@ class MainActivity : AppCompatActivity() {
             getString(R.string.step_apps_none)
         } else {
             resources.getQuantityString(R.plurals.apps_guarded, guarded, guarded)
+        }
+
+        val sites = prefs.guardedSites.size
+        binding.sitesBody.text = if (sites == 0) {
+            getString(R.string.step_sites_none)
+        } else {
+            resources.getQuantityString(R.plurals.sites_guarded, sites, sites)
         }
     }
 

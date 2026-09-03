@@ -23,7 +23,7 @@ class GateAccessibilityService : AccessibilityService() {
     /** Last app we saw in the foreground, so we can tell when the user leaves one. */
     private var lastPackage: String? = null
 
-    /** Uptime at which each guarded app was last left, used by the reset-on-leave rule. */
+    /** Uptime at which each guarded app was last left, used to decide when a pass is spent. */
     private val leftAt = mutableMapOf<String, Long>()
 
     /** Uptime of the last gate we opened, per package, to avoid re-gating in a loop. */
@@ -69,13 +69,14 @@ class GateAccessibilityService : AccessibilityService() {
 
         if (!prefs.isGuarded(packageName)) return
 
-        // Coming back after a real absence means the pass has been used up.
-        if (prefs.resetOnLeave && packageName != previous) {
+        // A pass lasts for as long as the user stays in the app. Coming back after
+        // a real absence is a new visit, so the pass is spent.
+        if (packageName != previous) {
             val away = leftAt[packageName]?.let { SystemClock.elapsedRealtime() - it } ?: Long.MAX_VALUE
             if (away > AWAY_GRACE_MS) prefs.clearPass(packageName)
         }
 
-        if (prefs.hasValidPass(packageName)) return
+        if (prefs.hasPass(packageName)) return
         if (GateActivity.isShowing) return
 
         val since = gatedAt[packageName]?.let { SystemClock.elapsedRealtime() - it } ?: Long.MAX_VALUE

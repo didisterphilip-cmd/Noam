@@ -131,7 +131,7 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Behaviour -->
+        <!-- How a pass behaves -->
         <com.google.android.material.card.MaterialCardView
             style="@style/Card.Gate"
             android:layout_width="match_parent"
@@ -150,33 +150,10 @@
                     android:text="@string/settings_title" />
 
                 <TextView
-                    android:id="@+id/passLabel"
-                    style="@style/CardBody.Gate"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-                <com.google.android.material.slider.Slider
-                    android:id="@+id/passSlider"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:stepSize="1"
-                    android:valueFrom="1"
-                    android:valueTo="60" />
-
-                <com.google.android.material.materialswitch.MaterialSwitch
-                    android:id="@+id/resetSwitch"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="@string/reset_on_leave_title"
-                    android:textColor="@color/gate_text"
-                    android:textSize="15sp" />
-
-                <TextView
                     style="@style/CardBody.Gate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/reset_on_leave_body" />
+                    android:text="@string/pass_explainer" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

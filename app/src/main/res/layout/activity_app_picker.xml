@@ -12,6 +12,19 @@
         android:background="@color/gate_background"
         android:title="@string/title_pick_apps" />
 
+    <!-- Only shown the first time, when the user arrives here straight after install. -->
+    <TextView
+        android:id="@+id/intro"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="12dp"
+        android:lineSpacingExtra="3dp"
+        android:text="@string/picker_intro"
+        android:textColor="@color/gate_text_muted"
+        android:textSize="14sp"
+        android:visibility="gone" />
+
     <EditText
         android:id="@+id/searchInput"
         android:layout_width="match_parent"
@@ -32,5 +45,18 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:clipToPadding="false"
-        android:paddingBottom="24dp" />
+        android:paddingBottom="16dp" />
+
+    <Button
+        android:id="@+id/doneButton"
+        style="@style/Widget.Material3.Button"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_margin="20dp"
+        android:backgroundTint="@color/gate_accent"
+        android:text="@string/picker_done"
+        android:textColor="@color/gate_background"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
 </LinearLayout>

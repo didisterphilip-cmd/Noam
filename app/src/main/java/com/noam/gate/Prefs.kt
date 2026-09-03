@@ -4,8 +4,12 @@ import android.content.Context
 import android.content.SharedPreferences
 
 /**
- * All persisted state: which apps are guarded and the short-lived passes handed
- * out when the user chooses to continue into one of them.
+ * All persisted state: which apps are guarded, whether the first-run setup has
+ * been done, and the passes handed out when the user chooses to continue.
+ *
+ * A pass has no clock on it. Once it is granted the gate stays out of the way for
+ * as long as the user is in that app; the service revokes it only after they have
+ * properly left (see [GateAccessibilityService]).
  */
 class Prefs(context: Context) {
 
@@ -25,26 +29,16 @@ class Prefs(context: Context) {
         if (!guarded) clearPass(packageName)
     }
 
-    /**
-     * How long a pass lasts at most, in minutes. It is a ceiling, not the usual
-     * case: with [resetOnLeave] on, leaving the app ends the pass much sooner.
-     */
-    var passMinutes: Int
-        get() = prefs.getInt(KEY_PASS_MINUTES, 15)
-        set(value) = prefs.edit().putInt(KEY_PASS_MINUTES, value.coerceIn(1, 60)).apply()
-
-    /** Show the gate again once the user has properly left the app. */
-    var resetOnLeave: Boolean
-        get() = prefs.getBoolean(KEY_RESET_ON_LEAVE, true)
-        set(value) = prefs.edit().putBoolean(KEY_RESET_ON_LEAVE, value).apply()
+    /** False until the user has been through the pick-your-apps screen once. */
+    var setupDone: Boolean
+        get() = prefs.getBoolean(KEY_SETUP_DONE, false)
+        set(value) = prefs.edit().putBoolean(KEY_SETUP_DONE, value).apply()
 
     fun grantPass(packageName: String) {
-        val expiry = System.currentTimeMillis() + passMinutes * 60_000L
-        prefs.edit().putLong(passKey(packageName), expiry).apply()
+        prefs.edit().putBoolean(passKey(packageName), true).apply()
     }
 
-    fun hasValidPass(packageName: String): Boolean =
-        prefs.getLong(passKey(packageName), 0L) > System.currentTimeMillis()
+    fun hasPass(packageName: String): Boolean = prefs.getBoolean(passKey(packageName), false)
 
     fun clearPass(packageName: String) {
         prefs.edit().remove(passKey(packageName)).apply()
@@ -54,7 +48,6 @@ class Prefs(context: Context) {
 
     companion object {
         private const val KEY_GUARDED = "guarded_packages"
-        private const val KEY_PASS_MINUTES = "pass_minutes"
-        private const val KEY_RESET_ON_LEAVE = "reset_on_leave"
+        private const val KEY_SETUP_DONE = "setup_done"
     }
 }

@@ -75,7 +75,7 @@ class GateActivity : AppCompatActivity() {
         animator?.cancel()
         binding.decisionGroup.visibility = View.INVISIBLE
         binding.sweepLine.progress = 0f
-        binding.countdownText.text = SECONDS_TOTAL.toString()
+        binding.countdownText.text = PHASE_SECONDS.toString()
 
         animator = ValueAnimator.ofFloat(0f, 1f).apply {
             duration = COUNTDOWN_MS
@@ -86,8 +86,12 @@ class GateActivity : AppCompatActivity() {
                 binding.sweepLine.progress =
                     if (fraction <= 0.5f) fraction * 2f else (1f - fraction) * 2f
 
-                val remaining = ceil((1f - fraction) * SECONDS_TOTAL).toInt()
-                val shown = remaining.coerceIn(0, SECONDS_TOTAL)
+                // Two counts of five rather than one count of ten: the number
+                // restarts at 5 when the line turns around.
+                val elapsedMs = fraction * COUNTDOWN_MS
+                val intoPhase = elapsedMs % PHASE_MS
+                val shown = ceil((PHASE_MS - intoPhase) / 1000f).toInt()
+                    .coerceIn(0, PHASE_SECONDS)
                 if (binding.countdownText.text != shown.toString()) {
                     binding.countdownText.text = shown.toString()
                 }
@@ -180,8 +184,10 @@ class GateActivity : AppCompatActivity() {
     companion object {
         const val EXTRA_PACKAGE = "com.noam.gate.extra.PACKAGE"
 
-        private const val SECONDS_TOTAL = 10
-        private const val COUNTDOWN_MS = SECONDS_TOTAL * 1000L
+        /** Five seconds up, then five seconds back down. */
+        private const val PHASE_SECONDS = 5
+        private const val PHASE_MS = PHASE_SECONDS * 1000f
+        private const val COUNTDOWN_MS = 2 * PHASE_SECONDS * 1000L
         private const val KILL_DELAY_MS = 400L
 
         /** Read by the service so it never stacks a second gate on top of this one. */

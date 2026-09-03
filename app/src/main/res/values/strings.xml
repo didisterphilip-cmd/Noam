@@ -26,13 +26,13 @@
     <string name="step_apps_none">No apps chosen yet.</string>
     <string name="step_apps_button">Choose apps</string>
 
-    <string name="settings_title">Behaviour</string>
-    <string name="pass_minutes_label">After continuing, stay in for up to %1$d minutes</string>
-    <string name="reset_on_leave_title">Ask again after you leave</string>
-    <string name="reset_on_leave_body">Once you have been out of the app for half a minute, opening it again brings the gate back even if that time is not up.</string>
+    <string name="settings_title">Once you continue</string>
+    <string name="pass_explainer">The count does not come back while you are in the app — switch screens, follow links, do whatever you came for. It returns the next time you open the app, once you have been away for half a minute.</string>
     <string name="preview_button">Preview the gate</string>
 
     <string name="search_apps">Search apps</string>
+    <string name="picker_intro">Pick the apps you want to stop and count in front of. You can change this list later from the Gate app.</string>
+    <string name="picker_done">Done</string>
 
     <plurals name="apps_guarded">
         <item quantity="one">%1$d app guarded</item>

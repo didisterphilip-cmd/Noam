@@ -3,8 +3,8 @@
 An Android app that puts a ten-second pause in front of the apps you choose.
 
 You tap Instagram (or whatever is on your list). Instead of Instagram, a full-screen
-count appears: a line sweeps up the screen for five seconds, back down for five, and
-the number counts 10 → 0. Only then do two buttons appear:
+count appears: a line sweeps up the screen while the number counts 5 → 1, then the
+line comes back down while it counts 5 → 1 again. Only then do two buttons appear:
 
 - **I don't want to use the app** — the large button. Leaves the app and closes it.
 - **Continue to the app** — the small, quiet one underneath. Opens the app you tapped.
@@ -16,18 +16,19 @@ There is no way past the countdown: back does nothing while it runs.
 | Piece | File | What it does |
 | --- | --- | --- |
 | Foreground watcher | `GateAccessibilityService.kt` | An accessibility service that hears `TYPE_WINDOW_STATE_CHANGED` and, when the app coming forward is on your list, launches the gate over it. |
-| The pause screen | `GateActivity.kt` | Runs one 10s animator that drives both the line and the count, then reveals the buttons. |
+| The pause screen | `GateActivity.kt` | Runs one 10s animator that drives both the line and the two counts of five, then reveals the buttons. |
 | The line | `SweepLineView.kt` | A custom view drawing a full-width line at a height set by `progress` (0 = bottom, 1 = top). |
 | Your list | `AppPickerActivity.kt`, `Prefs.kt` | Every launchable app, with the guarded ones ticked; stored in `SharedPreferences`. |
 
 ### Passes
 
-After you continue, the app hands out a *pass* so the gate does not fire again on
-every screen change inside the app you just opened. A pass ends when either:
+Pressing **Continue to the app** hands out a *pass*, and the count does not come back
+while you are in that app — no timer runs out under you, no second gate when you move
+between screens or follow a link out and back.
 
-- you have been out of the app for 30 seconds (**Ask again after you leave**, on by
-  default) — so the next real open shows the gate again, or
-- the maximum time is up (slider in the app, default 15 minutes).
+The pass is spent once you have properly left: when the app comes forward again after
+30 seconds or more somewhere else, the next open gets the gate. That 30-second grace
+is what stops a glance at a notification from counting as leaving.
 
 ### Closing the app
 
@@ -40,13 +41,17 @@ appear as a card in Recents until the system prunes it.
 
 ## Setup on the phone
 
-1. Install and open **Gate**.
-2. **Turn on the Gate service** — Accessibility settings → Gate → On. Without this
+Gate installs into the normal app drawer like any other app. Opening it the first
+time goes straight to the list of apps on the phone so you can tick what to guard;
+after that the main screen has three steps:
+
+1. **Turn on the Gate service** — Accessibility settings → Gate → On. Without this
    the app cannot tell which app you are opening.
-3. **Allow display over other apps** — this is what lets the gate reliably come to
+2. **Allow display over other apps** — this is what lets the gate reliably come to
    the front from the background on Android 10 and later. Skipping it means the
    gate may silently fail to appear on some phones.
-4. **Choose the apps** you want guarded.
+3. **Choose the apps** — the same picker, reachable any time, with a search box.
+   Ticks save as you make them.
 
 Use **Preview the gate** on the main screen to see the countdown without opening a
 guarded app.
@@ -75,4 +80,4 @@ with the Android SDK installed:
 Nothing leaves the phone. The accessibility service is configured with
 `canRetrieveWindowContent="false"`: it is told which app has come to the front and
 nothing about what is on the screen. The only stored data is your app list and the
-pass timestamps, in this app's own `SharedPreferences`.
+passes, in this app's own `SharedPreferences`.

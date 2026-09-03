@@ -7,7 +7,7 @@ import android.provider.Settings
 import androidx.appcompat.app.AppCompatActivity
 import com.noam.gate.databinding.ActivityMainBinding
 
-/** Setup screen: turn the service on, grant the overlay permission, pick the apps. */
+/** Setup screen: turn the service on, grant the overlay permission, edit the app list. */
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
@@ -32,25 +32,27 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-        binding.appsButton.setOnClickListener {
-            startActivity(Intent(this, AppPickerActivity::class.java))
-        }
-
-        binding.passSlider.addOnChangeListener { _, value, fromUser ->
-            if (fromUser) {
-                prefs.passMinutes = value.toInt()
-                updatePassLabel()
-            }
-        }
-
-        binding.resetSwitch.setOnCheckedChangeListener { _, checked ->
-            prefs.resetOnLeave = checked
-        }
+        binding.appsButton.setOnClickListener { openAppPicker(onboarding = false) }
 
         binding.previewButton.setOnClickListener {
             val preview = prefs.guardedPackages.firstOrNull() ?: packageName
             startActivity(GateActivity.intentFor(this, preview))
         }
+
+        // First run after install: go straight to the list of apps on the phone so
+        // the user can choose what to guard. Afterwards the list is reached from
+        // the button on this screen.
+        if (savedInstanceState == null && !prefs.setupDone) {
+            prefs.setupDone = true
+            openAppPicker(onboarding = true)
+        }
+    }
+
+    private fun openAppPicker(onboarding: Boolean) {
+        startActivity(
+            Intent(this, AppPickerActivity::class.java)
+                .putExtra(AppPickerActivity.EXTRA_ONBOARDING, onboarding)
+        )
     }
 
     override fun onResume() {
@@ -74,13 +76,5 @@ class MainActivity : AppCompatActivity() {
         } else {
             resources.getQuantityString(R.plurals.apps_guarded, guarded, guarded)
         }
-
-        binding.passSlider.value = prefs.passMinutes.toFloat()
-        binding.resetSwitch.isChecked = prefs.resetOnLeave
-        updatePassLabel()
-    }
-
-    private fun updatePassLabel() {
-        binding.passLabel.text = getString(R.string.pass_minutes_label, prefs.passMinutes)
     }
 }

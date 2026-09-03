@@ -8,7 +8,7 @@ screen asks something of you first. Which thing is your choice, in setup:
 | Task | What it asks |
 | --- | --- |
 | **Breathe** | Ten seconds. **INHALE** while a line sweeps up the screen and the number counts 5 → 1, then **EXHALE** as it comes back down counting 5 → 1 again. Nothing to press. |
-| **Three sums** | Three problems, one each from three of adding, subtracting, multiplying and dividing. Type each answer. A wrong one keeps the same problem. |
+| **Two sums** | Two problems, one each from two of adding, subtracting, multiplying and dividing. Type each answer. A wrong one keeps the same problem. |
 | **A chapter of Tehillim** | A short chapter in Hebrew, at random from the ten under 250 characters. *I have read it* appears after five seconds. |
 
 Only when the task is done do two buttons appear.

@@ -77,12 +77,17 @@ class MathTask(
             ?.hideSoftInputFromWindow(binding.mathInput.windowToken, 0)
     }
 
-    /** One problem each from three of the four operations, in a random order. */
+    /** One problem each from two of the four operations, in a random order. */
     private fun generate(): List<Problem> =
         listOf(Op.PLUS, Op.MINUS, Op.TIMES, Op.DIVIDE)
             .shuffled()
-            .take(3)
+            .take(PROBLEM_COUNT)
             .map { it.problem() }
+
+    companion object {
+        /** How many problems the gate asks for. At most four — one per operation. */
+        private const val PROBLEM_COUNT = 2
+    }
 
     private enum class Op {
         PLUS, MINUS, TIMES, DIVIDE;

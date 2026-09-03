@@ -61,8 +61,8 @@
     <string name="task_title">The task</string>
     <string name="task_breath">Breathe for ten seconds</string>
     <string name="task_breath_body">A line rises for five seconds and falls for five. Nothing to press.</string>
-    <string name="task_math">Solve three sums</string>
-    <string name="task_math_body">Three problems — adding, subtracting, multiplying or dividing — each answered by typing the number.</string>
+    <string name="task_math">Solve two sums</string>
+    <string name="task_math_body">Two problems — adding, subtracting, multiplying or dividing — each answered by typing the number.</string>
     <string name="task_psalm">Read a chapter of Tehillim</string>
     <string name="task_psalm_body">A short chapter in Hebrew, chosen at random from the ten under 250 characters. The button to continue appears once there has been time to read it.</string>
 
